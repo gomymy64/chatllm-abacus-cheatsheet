@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Материалы к Уроку ChatLLM by Abacus AI | Мастодонт</title>
+<style>
+@font-face{font-family:'Benzin';src:url('fonts/Benzin-Regular.ttf') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:'Benzin';src:url('fonts/Benzin-Semibold.ttf') format('truetype');font-weight:600;font-display:swap}
+@font-face{font-family:'Benzin';src:url('fonts/Benzin-Bold.ttf') format('truetype');font-weight:700;font-display:swap}
+
+:root{
+  --bg:#08080A; --bg2:#101014; --bg3:#17171E;
+  --ink:#F5F1E8; --dim:#8B8578;
+  --a1:#F2DB82; --a2:#00D2BE;
+  --line:rgba(245,241,232,.10);
+  --mono:'SFMono-Regular',ui-monospace,'Cascadia Mono','Consolas',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--a1) var(--bg2)}
+html::-webkit-scrollbar{width:12px}
+html::-webkit-scrollbar-track{background:var(--bg2)}
+html::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--a1),var(--a2));border-radius:8px;border:3px solid var(--bg2)}
+html::-webkit-scrollbar-thumb:hover{background:var(--a1)}
+
+body{background:var(--bg);color:var(--ink);
+  font-family:'Onest','Manrope',system-ui,-apple-system,sans-serif;
+  line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* атмосфера */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(52% 38% at 12% 8%,rgba(242,219,130,.07),transparent 62%),
+             radial-gradient(48% 40% at 88% 68%,rgba(0,210,190,.055),transparent 64%)}
+body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* свет за курсором */
+#glow{position:fixed;width:520px;height:520px;border-radius:50%;pointer-events:none;z-index:1;
+  background:radial-gradient(circle,rgba(242,219,130,.055),transparent 68%);
+  transform:translate(-50%,-50%);transition:opacity .4s;opacity:0}
+
+/* прогресс чтения */
+#bar{position:fixed;top:0;left:0;height:3px;width:0;z-index:200;
+  background:linear-gradient(90deg,var(--a1),var(--a2));box-shadow:0 0 14px rgba(242,219,130,.5)}
+
+/* навбар */
+nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(18px);
+  background:rgba(8,8,10,.82);position:relative}
+nav::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--a1),var(--a2),transparent)}
+.navin{max-width:1320px;margin:0 auto;padding:16px clamp(18px,4vw,56px);
+  display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{font-family:'Benzin',sans-serif;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;font-size:clamp(14px,1.3vw,19px)}
+.navlinks{display:flex;gap:clamp(12px,2vw,30px);flex-wrap:wrap}
+.navlinks a{color:var(--dim);text-decoration:none;font-size:13px;letter-spacing:.04em;
+  text-transform:uppercase;transition:color .25s}
+.navlinks a:hover{color:var(--a1)}
+@media(max-width:620px){.navlinks{display:none}}
+
+/* герой */
+header.hero{position:relative;min-height:min(104vh,1075px);overflow:hidden;
+  display:flex;align-items:flex-end;z-index:2}
+.heroimg{position:absolute;inset:-8% 0 -8% 0;z-index:0;will-change:transform}
+.heroimg img{width:100%;height:100%;object-fit:cover;display:block}
+.heroveil{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(8,8,10,.72) 0%,rgba(8,8,10,.18) 32%,
+             rgba(8,8,10,.52) 68%,var(--bg) 99%)}
+.heroline{position:absolute;left:0;right:0;bottom:0;height:1px;z-index:3;
+  background:rgba(239,234,226,.14)}
+.heroin{position:relative;z-index:2;max-width:1320px;margin:0 auto;width:100%;
+  padding:0 clamp(18px,4vw,56px) clamp(56px,8vh,110px)}
+.kicker{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--a1);border:1px solid rgba(242,219,130,.34);
+  padding:7px 15px;margin-bottom:26px;background:rgba(8,8,10,.5)}
+h1{font-family:'Benzin',sans-serif;font-weight:700;text-transform:uppercase;
+  font-size:clamp(30px,5.6vw,78px);line-height:1.02;letter-spacing:-.005em;max-width:19ch}
+h1 span{color:var(--a1);text-shadow:0 0 26px rgba(242,219,130,.5),0 0 58px rgba(242,219,130,.25),0 0 92px rgba(242,219,130,.12)}
+.herosub{margin-top:22px;font-size:clamp(15px,1.4vw,20px);color:#CFC8BB;max-width:56ch}
+.ytbtn{display:inline-flex;align-items:center;gap:12px;margin-top:34px;
+  padding:15px 28px;border-radius:2px;text-decoration:none;color:var(--bg);
+  background:linear-gradient(94deg,var(--a1),var(--a2));font-weight:700;
+  font-size:15px;letter-spacing:.02em;transition:transform .3s,box-shadow .3s;
+  box-shadow:0 16px 40px -20px rgba(242,219,130,.7)}
+.ytbtn:hover{transform:translateY(-3px);box-shadow:0 22px 52px -20px rgba(242,219,130,.85)}
+.ytbtn svg{width:22px;height:22px;flex:none}
+
+/* секции */
+section{position:relative;z-index:2;max-width:1320px;margin:0 auto;
+  padding:clamp(64px,9vh,124px) clamp(18px,4vw,56px)}
+h2{font-family:'Benzin',sans-serif;font-weight:700;text-transform:uppercase;
+  font-size:clamp(22px,3.4vw,46px);line-height:1.08;margin-bottom:14px;letter-spacing:-.005em}
+h2 span{color:var(--a2);text-shadow:0 0 22px rgba(0,210,190,.4)}
+.lede{color:var(--dim);font-size:clamp(15px,1.3vw,18px);max-width:62ch;margin-bottom:48px}
+
+/* карточки «научишься» */
+.grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(255px,1fr))}
+.gcard{position:relative;padding:30px 26px;border:1px solid var(--line);
+  background:linear-gradient(152deg,var(--bg3),var(--bg2));overflow:hidden;
+  transition:transform .4s cubic-bezier(.2,.8,.2,1),border-color .4s}
+.gcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--a1),var(--a2))}
+.gcard::after{content:'';position:absolute;top:-45%;right:-25%;width:200px;height:200px;
+  background:radial-gradient(circle,rgba(242,219,130,.10),transparent 70%);pointer-events:none}
+.gcard:hover{border-color:rgba(242,219,130,.3)}
+.gnum{font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--a1);
+  text-transform:uppercase;display:block;margin-bottom:14px}
+.gcard p{font-size:15px;color:#D9D3C7;position:relative;z-index:1}
+
+/* инструменты */
+.tools{display:grid;gap:14px;margin-top:8px}
+.tool{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  padding:20px 24px;border:1px solid var(--line);background:var(--bg2);
+  text-decoration:none;color:var(--ink);position:relative;overflow:hidden;
+  transition:transform .32s,border-color .32s}
+.tool::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;
+  background:linear-gradient(180deg,var(--a1),var(--a2));transition:width .32s}
+.tool:hover{transform:translateX(9px);border-color:rgba(242,219,130,.28)}
+.tool:hover::before{width:3px}
+.tname{font-weight:700;font-size:16px}
+.tdesc{color:var(--dim);font-size:14px}
+.badge{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  padding:5px 12px;border:1px solid rgba(0,210,190,.36);color:var(--a2);white-space:nowrap}
+
+/* полноэкранный кадр */
+.plate{position:relative;height:min(78vh,760px);overflow:hidden;z-index:2;margin:clamp(20px,4vh,50px) 0}
+.plate .pimg{position:absolute;inset:-9% 0;will-change:transform}
+.plate img{width:100%;height:100%;object-fit:cover;display:block}
+.plate .pveil{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(8,8,10,.62),rgba(8,8,10,.2) 42%,rgba(8,8,10,.86))}
+.pcap{position:absolute;left:clamp(18px,4vw,64px);bottom:clamp(34px,6vh,72px);z-index:2;max-width:24ch}
+.pkick{font-family:var(--mono);font-size:11px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--a2);display:block;margin-bottom:12px}
+.pbig{font-family:'Benzin',sans-serif;font-weight:700;text-transform:uppercase;
+  font-size:clamp(21px,3.4vw,46px);line-height:1.06}
+
+/* шаги */
+.step{display:grid;grid-template-columns:minmax(96px,150px) 1fr;gap:clamp(20px,3vw,48px);
+  padding:clamp(28px,3.6vw,48px);border:1px solid var(--line);margin-bottom:26px;
+  background:linear-gradient(152deg,var(--bg3),var(--bg2));position:relative;overflow:hidden;
+  transition:border-color .4s}
+.step::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--a1),var(--a2))}
+.step::after{content:'';position:absolute;bottom:-35%;left:-12%;width:340px;height:340px;
+  background:radial-gradient(circle,rgba(0,210,190,.075),transparent 70%);pointer-events:none}
+.step:hover{border-color:rgba(242,219,130,.24)}
+.snum{font-family:'Benzin',sans-serif;font-weight:700;font-size:clamp(46px,7vw,104px);
+  line-height:.82;color:transparent;-webkit-text-stroke:1.6px rgba(242,219,130,.42);
+  position:sticky;top:104px;align-self:start}
+.sbody{position:relative;z-index:1;min-width:0}
+h3{font-family:'Benzin',sans-serif;font-weight:700;text-transform:uppercase;
+  font-size:clamp(17px,2.1vw,29px);line-height:1.14;margin-bottom:14px}
+.sbody>p{color:#CFC8BB;font-size:15px;margin-bottom:22px}
+.acts{list-style:none;margin-bottom:24px}
+.acts li{padding-left:26px;position:relative;margin-bottom:11px;font-size:15px;color:#D9D3C7}
+.acts li::before{content:'▸';position:absolute;left:0;color:var(--a1);font-size:15px}
+
+/* промпт */
+.pwrap{margin:26px 0}
+.plabel{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  margin-bottom:11px;flex-wrap:wrap}
+.plabel span{font-family:var(--mono);font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--a1)}
+.copy{background:transparent;border:1px solid rgba(242,219,130,.34);color:var(--a1);
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  padding:7px 15px;cursor:pointer;transition:background .25s,color .25s}
+.copy:hover{background:var(--a1);color:var(--bg)}
+.copy.ok{background:var(--a2);border-color:var(--a2);color:var(--bg)}
+pre{background:#0B0B0F;border-left:3px solid transparent;
+  border-image:linear-gradient(180deg,var(--a1),var(--a2)) 1;
+  padding:24px 26px;overflow-x:auto;max-height:440px;
+  box-shadow:inset 0 1px 0 rgba(242,219,130,.14),0 22px 48px -30px rgba(0,0,0,.95);
+  scrollbar-width:thin;scrollbar-color:var(--a1) #0B0B0F}
+pre::-webkit-scrollbar{width:10px;height:10px}
+pre::-webkit-scrollbar-track{background:#0B0B0F}
+pre::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--a1),var(--a2));border-radius:6px;border:2px solid #0B0B0F}
+pre code{font-family:var(--mono);font-size:13.5px;line-height:1.72;color:#E6E0D4;white-space:pre-wrap;word-break:break-word}
+
+.note{padding:16px 20px;border:1px solid var(--line);background:rgba(0,210,190,.045);
+  font-size:14.5px;color:#CFC8BB;margin-top:16px}
+.note b{color:var(--a2);font-weight:700}
+.setting{font-family:var(--mono);font-size:13px;color:var(--dim);
+  padding:13px 18px;border:1px dashed rgba(242,219,130,.26);margin-top:16px}
+
+/* CTA */
+.cta{position:relative;padding:clamp(34px,5vw,64px);border:1px solid rgba(242,219,130,.28);
+  background:linear-gradient(150deg,var(--bg3),var(--bg2));overflow:hidden;cursor:pointer;
+  animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 rgba(242,219,130,0)}50%{box-shadow:0 0 62px -16px rgba(242,219,130,.32)}}
+.cta::before{content:'';position:absolute;top:-38%;right:-16%;width:420px;height:420px;
+  background:radial-gradient(circle,rgba(242,219,130,.14),transparent 68%);pointer-events:none}
+.cta::after{content:'';position:absolute;bottom:-42%;left:-14%;width:400px;height:400px;
+  background:radial-gradient(circle,rgba(0,210,190,.11),transparent 68%);pointer-events:none}
+.ctalink{position:absolute;inset:0;z-index:1}
+.cta>*:not(.ctalink){position:relative;z-index:2}
+.cta h2{margin-bottom:34px}
+.ctacols{display:grid;grid-template-columns:1fr 1fr;gap:clamp(22px,3vw,52px);margin-bottom:38px}
+@media(max-width:760px){.ctacols{grid-template-columns:1fr}}
+.ctacol h4{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:16px;font-weight:400}
+.ctacol ul{list-style:none}
+.ctacol li{margin-bottom:13px;font-size:15px;color:#D9D3C7;padding-left:28px;position:relative}
+.ctacol li span{position:absolute;left:0}
+.ctabot{display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;
+  padding-top:28px;border-top:1px solid var(--line)}
+.ctafree{font-size:16px;color:var(--dim)}
+.ctafree b{color:var(--a1);font-family:'Benzin',sans-serif;text-transform:uppercase;font-size:17px}
+.ctabtn{display:inline-block;padding:16px 34px;background:linear-gradient(94deg,var(--a1),var(--a2));
+  color:var(--bg);font-weight:700;font-size:15px;text-decoration:none;
+  box-shadow:0 16px 42px -20px rgba(242,219,130,.75);transition:transform .3s}
+.cta:hover .ctabtn{transform:translateY(-3px)}
+
+/* ссылки */
+.links{display:grid;gap:14px}
+.link{display:flex;align-items:center;gap:20px;padding:22px 26px;border:1px solid var(--line);
+  background:var(--bg2);text-decoration:none;color:var(--ink);position:relative;overflow:hidden;
+  transition:transform .32s,border-color .32s}
+.link::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;
+  background:linear-gradient(180deg,var(--a1),var(--a2));transition:width .32s}
+.link:hover{transform:translateX(9px);border-color:rgba(0,210,190,.32)}
+.link:hover::before{width:3px}
+.licon{width:44px;height:44px;flex:none;display:grid;place-items:center;
+  border:1px solid rgba(242,219,130,.28);color:var(--a1);font-size:19px}
+.lbody{flex:1;min-width:0}
+.lname{font-weight:700;font-size:16px;margin-bottom:3px}
+.lurl{font-family:var(--mono);font-size:12.5px;color:var(--dim);word-break:break-all}
+
+footer{border-top:1px solid var(--line);padding:clamp(44px,6vh,76px) clamp(18px,4vw,56px);
+  text-align:center;position:relative;z-index:2}
+footer .brand{font-size:clamp(17px,2.4vw,28px);margin-bottom:12px;display:block}
+footer p{color:var(--dim);font-size:14px;margin-bottom:22px}
+footer a{color:var(--a1);text-decoration:none;font-size:14px;border-bottom:1px solid rgba(242,219,130,.3)}
+
+.rv{opacity:0;transform:translateY(34px) scale(.985)}
+.rv.on{opacity:1;transform:none;transition:opacity .78s ease,transform .78s cubic-bezier(.2,.8,.2,1)}
+@media(prefers-reduced-motion:reduce){
+  .rv{opacity:1;transform:none}
+  #glow{display:none}
+  .heroimg,.plate .pimg{transform:none!important}
+}
+@media(max-width:700px){
+  .step{grid-template-columns:1fr;gap:14px}
+  .snum{position:static}
+}
+</style>
+</head>
+<body>
+
+<div id="bar"></div>
+<div id="glow"></div>
+
+<nav>
+  <div class="navin">
+    <div class="brand">Мастодонт</div>
+    <div class="navlinks">
+      <a href="#tools">Инструменты</a>
+      <a href="#steps">Шаги</a>
+      <a href="#links">Ссылки</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="heroimg" id="hi"><img src="img/hero.jpg" alt=""></div>
+  <div class="heroveil"></div>
+  <div class="heroline"></div>
+  <div class="heroin">
+    <span class="kicker">Материалы к уроку</span>
+    <h1>Все нейросети <span>в одном окне</span></h1>
+    <p class="herosub">Клон Notion одним промптом, сайт с приёмом оплаты и промо-ролик к нему - всё в одном месте, без второй вкладки и второй подписки.</p>
+    <a class="ytbtn" href="https://youtu.be/OxM-CxEkvcA" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2s-.2-1.6-.9-2.3c-.9-1-1.9-1-2.4-1-3.3-.2-8.2-.2-8.2-.2s-4.9 0-8.2.2c-.5 0-1.5.1-2.4 1-.7.7-.9 2.3-.9 2.3S0 8.1 0 10v1.8c0 1.9.2 3.8.2 3.8s.2 1.6.9 2.3c.9 1 2.1.9 2.6 1 1.9.2 8.3.2 8.3.2s4.9 0 8.2-.2c.5-.1 1.5-.1 2.4-1 .7-.7.9-2.3.9-2.3s.2-1.9.2-3.8V10c0-1.9-.2-3.8-.2-3.8zM9.5 14.5v-6l6.3 3-6.3 3z"/></svg>
+      Смотреть видео
+    </a>
+  </div>
+</header>
+
+<section>
+  <h2 class="rv">Что ты <span>научишься делать</span></h2>
+  <p class="lede rv">Четыре вещи, которые в ролике собираются подряд в одном окне.</p>
+  <div class="grid">
+    <div class="gcard rv"><span class="gnum">01</span><p>Клонировать популярный сервис одним промптом - в ролике это Notion со всеми фичами, базами, фильтрами и сортировками</p></div>
+    <div class="gcard rv"><span class="gnum">02</span><p>Собирать сайт с приёмом оплаты и подставлять в него свои фотографии вместо стоковых людей</p></div>
+    <div class="gcard rv"><span class="gnum">03</span><p>Снимать промо-ролик там же, не заводя отдельный сервис и второй счёт</p></div>
+    <div class="gcard rv"><span class="gnum">04</span><p>Поднимать облачный компьютер, который работает круглосуточно, пока твой ноутбук выключен</p></div>
+  </div>
+</section>
+
+<section id="tools">
+  <h2 class="rv">Что <span>понадобится</span></h2>
+  <p class="lede rv">Список короткий - в этом весь смысл.</p>
+  <div class="tools">
+    <a class="tool rv" href="https://chatllm.abacus.ai/abo" target="_blank" rel="noopener">
+      <div><div class="tname">ChatLLM by Abacus AI</div><div class="tdesc">Все модели, генерация картинок и видео, агент и облачная машина в одном окне</div></div>
+      <span class="badge">от $10 / мес</span>
+    </a>
+    <div class="tool rv">
+      <div><div class="tname">Свои фотографии</div><div class="tdesc">Несколько кадров с разных ракурсов - чем больше, тем точнее агент подставит тебя в картинки сайта</div></div>
+      <span class="badge">бесплатно</span>
+    </div>
+    <div class="tool rv">
+      <div><div class="tname">Аккаунт Stripe</div><div class="tdesc">Нужен, только если хочешь, чтобы кнопка оплаты на лендинге принимала настоящие деньги</div></div>
+      <span class="badge">по желанию</span>
+    </div>
+  </div>
+</section>
+
+<div class="plate">
+  <div class="pimg" id="p1"><img src="img/mid.jpg" alt=""></div>
+  <div class="pveil"></div>
+  <div class="pcap">
+    <span class="pkick">Считаем честно</span>
+    <div class="pbig">Пять подписок против одной</div>
+  </div>
+</div>
+
+<section id="steps">
+  <h2 class="rv">Шаги <span>по порядку</span></h2>
+  <p class="lede rv">Всё, что вводится в чат, лежит ниже целиком - копируй и вставляй.</p>
+
+  <div class="step rv">
+    <div class="snum">01</div>
+    <div class="sbody">
+      <h3>Клонируем Notion</h3>
+      <p>Заходим в раздел Apps. Модель можно выбрать руками, но проще оставить Auto - агент сам решит, кому отдать задачу, а простые шаги отдаст моделям подешевле, чтобы не жечь токены.</p>
+      <ul class="acts">
+        <li>Открой ChatLLM и зайди в раздел Apps</li>
+        <li>Оставь режим Auto в селекторе модели</li>
+        <li>Вставь промпт и отправь</li>
+      </ul>
+      <div class="pwrap">
+        <div class="plabel"><span>Промпт 1 - клон Notion</span><button class="copy">Скопировать</button></div>
+        <pre><code>сделай мне клон Notion — мой собственный, работающий.
+
+ты знаешь этот продукт, поэтому собери его основу как у них:
+- боковое меню со страницами и вложенностью
+- страницы с блоками, которые можно двигать
+- базы данных с таблицами, тегами и фильтрами
+- связи между страницами, чтобы из одной прыгать в другую
+- поиск по всему
+
+связи между страницами не упрощай, это главное во всей системе.
+белая тема, чисто, без нагромождения.
+
+сразу отвечаю на то, что ты обычно спрашиваешь:
+тестовых записей налей десяток, реалистичных.
+базу поднимай свою. деплой сразу, как будет готово.
+
+если что-то решишь упростить — скажи что именно и почему,
+до того как начнёшь делать.
+
+ты можешь полазить по их сайту? изучить в интернете скрины и так далее?
+мне нужен прямо полный клон со всеми фичами</code></pre>
+      </div>
+      <div class="note"><b>Скриншоты и техзадание кидать не надо.</b> Агент сам идёт в интернет и изучает продукт, который копирует. А если нужен конкретный сервис один в один - на гитхабе почти под любой популярный продукт лежит открытая альтернатива: кидаешь ссылку на репозиторий, и он забирает оттуда всё.</div>
+      <div class="note"><b>Хочешь результат поточнее</b> - попроси его сначала задать тебе вопросы. Он опросит и только потом пойдёт делать.</div>
+    </div>
+  </div>
+
+  <div class="step rv">
+    <div class="snum">02</div>
+    <div class="sbody">
+      <h3>Деплой и свой домен</h3>
+      <p>Готовый клон открывается по живой ссылке. Дальше выбираешь, где он будет жить.</p>
+      <ul class="acts">
+        <li>Жми кнопку Deploy</li>
+        <li>Выбери домен: их поддомен, свой субдомен или подключи кастомный</li>
+        <li>Проверь, что страница открывается по ссылке и данные на месте</li>
+      </ul>
+      <div class="note">Если именной адрес не нужен - можно вообще ничего не подключать и кидать их ссылку как есть. В дашборде проекта лежит аналитика трафика, база данных с записями и раздел с ключами приложения.</div>
+    </div>
+  </div>
+
+  <div class="step rv">
+    <div class="snum">03</div>
+    <div class="sbody">
+      <h3>Сайт с твоими фотографиями</h3>
+      <p>Лендинг агент собирает уже с картинками, но там абстракция и чужие люди. Меняем на себя.</p>
+      <ul class="acts">
+        <li>Прикрепи к сообщению свои фото - чем больше ракурсов, тем лучше</li>
+        <li>Отправь промпт в тот же чат, где собирал клон</li>
+      </ul>
+      <div class="pwrap">
+        <div class="plabel"><span>Промпт 2 - свои фото на сайт</span><button class="copy">Скопировать</button></div>
+        <pre><code>прикрепляю свои фотки и маскота моего бренда.
+
+переделай все картинки на сайте: везде, где сейчас абстракция или чужие люди,
+должен быть я или маскот. лица не меняй, они должны остаться узнаваемыми.
+
+стиль сайта не трогай — тот же свет, та же палитра, та же подача,
+просто теперь это мой бренд, а не безликий шаблон.
+
+сделай все кадры сразу и поставь на места.</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="step rv">
+    <div class="snum">04</div>
+    <div class="sbody">
+      <h3>Промо-ролик на этот сайт</h3>
+      <p>Пишется в тот же чат. Отдельный сервис и второй счёт не нужны.</p>
+      <div class="pwrap">
+        <div class="plabel"><span>Промпт 3 - промо-ролик</span><button class="copy">Скопировать</button></div>
+        <pre><code>сделай промо-ролик на восемь секунд для лендинга моей рабочей системы.
+возьми кадры с сайта, которые мы только что сделали, чтобы ролик был из того же мира.
+плавное движение камеры, без текста поверх.
+перед генерацией скажи, на какой модели будешь делать.</code></pre>
+      </div>
+      <div class="note"><b>Попроси зациклить ролик</b> - чтобы в конце он шёл обратно. Тогда при повторе не будет резкого стыка.</div>
+    </div>
+  </div>
+
+  <div class="step rv">
+    <div class="snum">05</div>
+    <div class="sbody">
+      <h3>Свой суперкомпьютер</h3>
+      <p>Это не песочница на одну задачу, а отдельная машина в облаке - с рабочим столом, браузером и своими файлами.</p>
+      <ul class="acts">
+        <li>Открой раздел SuperComputer и жми Start</li>
+        <li>Включи тумблер «не выключаться», если нужна круглосуточная работа</li>
+        <li>Подключи свой домен, если планируешь держать там сайт или бота</li>
+      </ul>
+      <div class="setting">⚙️ Расход: 1 кредит за 5 минут работы. Посчитай по своей экономике, выгоднее ли это отдельного VPS.</div>
+      <div class="note"><b>Машину можно передать другому человеку</b> - он сядет за тот же стол с того места, где ты остановился. Есть режим «только просмотр».</div>
+    </div>
+  </div>
+
+  <div class="step rv">
+    <div class="snum">06</div>
+    <div class="sbody">
+      <h3>Коннекторы</h3>
+      <p>Подключаешь свои сервисы и спрашиваешь по ним прямо в чате - отдельного бота собирать не надо.</p>
+      <ul class="acts">
+        <li>Открой раздел коннекторов и подключи нужный сервис - например Google Drive</li>
+        <li>Спроси что-нибудь по своим файлам</li>
+      </ul>
+      <div class="pwrap">
+        <div class="plabel"><span>Промпт 4 - вопрос по своим файлам</span><button class="copy">Скопировать</button></div>
+        <pre><code>расскажи про последний файл на моём Google диске</code></pre>
+      </div>
+      <div class="note"><b>Это можно вывести наружу.</b> Из подключения собирается отдельный бот, который отвечает клиентам на сайте или в телеге - и вешается на суперкомпьютер, чтобы работал без тебя.</div>
+    </div>
+  </div>
+
+  <div class="step rv">
+    <div class="snum">07</div>
+    <div class="sbody">
+      <h3>Эксперты и задачи по расписанию</h3>
+      <p>Два раздела, которые стоит открыть отдельно.</p>
+      <ul class="acts">
+        <li>Experts - готовые помощники по отраслям: здоровье, финансы, юридический, ролевые сценарии</li>
+        <li>Self-Improving Tasks - любую работу можно повесить на час, день или неделю</li>
+      </ul>
+      <div class="note"><b>В режиме самоулучшения</b> агент с каждым запуском делает задачу лучше, а результат проверяет отдельный агент - тот, который её не делал. Своих ошибок никто не видит, поэтому ревьюера стоит вызывать отдельно.</div>
+    </div>
+  </div>
+</section>
+
+<div class="plate">
+  <div class="pimg" id="p2"><img src="img/final.jpg" alt=""></div>
+  <div class="pveil"></div>
+  <div class="pcap">
+    <span class="pkick">Пока ты спишь</span>
+    <div class="pbig">Машина работает без тебя</div>
+  </div>
+</div>
+
+<section id="links">
+  <h2 class="rv">Все <span>ссылки</span></h2>
+  <div class="links">
+    <a class="link rv" href="https://chatllm.abacus.ai/abo" target="_blank" rel="noopener">
+      <div class="licon">◈</div>
+      <div class="lbody">
+        <div class="lname">ChatLLM by Abacus AI</div>
+        <div class="lurl">chatllm.abacus.ai/abo</div>
+      </div>
+      <span class="badge">от $10</span>
+    </a>
+    <a class="link rv" href="https://youtu.be/OxM-CxEkvcA" target="_blank" rel="noopener">
+      <div class="licon">▶</div>
+      <div class="lbody">
+        <div class="lname">Видео на YouTube</div>
+        <div class="lurl">youtu.be/OxM-CxEkvcA</div>
+      </div>
+      <span class="badge">смотреть</span>
+    </a>
+  </div>
+</section>
+
+<section>
+  <div class="cta rv">
+    <a class="ctalink" href="https://t.me/mastodont_aibot?start=mini_kurs" target="_blank" rel="noopener" aria-label="Забрать интенсив"></a>
+    <h2>Первые видосук на ИИ - <span>бесплатный интенсив</span></h2>
+    <div class="ctacols">
+      <div class="ctacol">
+        <h4>Внутри</h4>
+        <ul>
+          <li><span>✅</span>Реальный демо AntiGravity вживую</li>
+          <li><span>✅</span>Софт, который за 5 минут находит компании без сайтов с готовыми контактами</li>
+          <li><span>✅</span>Кейсы учеников: $1650 за 3 проекта без команды</li>
+        </ul>
+      </div>
+      <div class="ctacol">
+        <h4>Два бонуса в конце</h4>
+        <ul>
+          <li><span>💰</span>50 скучных и самых прибыльных ниш без конкуренции</li>
+          <li><span>🚀</span>Чек-лист: первые $500 за 7 дней</li>
+        </ul>
+      </div>
+    </div>
+    <div class="ctabot">
+      <div class="ctafree"><b>Бесплатно.</b> Навсегда.</div>
+      <span class="ctabtn">Забрать интенсив</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="brand">Мастодонт</span>
+  <p>AI и нейросети - просто, по делу</p>
+  <a href="https://youtu.be/OxM-CxEkvcA" target="_blank" rel="noopener">Смотреть видео на YouTube</a>
+</footer>
+
+<script>
+(function(){
+  var bar=document.getElementById('bar');
+  var hi=document.getElementById('hi'), p1=document.getElementById('p1'), p2=document.getElementById('p2');
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function onScroll(){
+    var y=scrollY, h=document.documentElement.scrollHeight-innerHeight;
+    bar.style.width=(h>0?(y/h*100):0)+'%';
+    if(reduce) return;
+    if(hi) hi.style.transform='translateY('+(y*0.06)+'px)';
+    [p1,p2].forEach(function(el){
+      if(!el) return;
+      var r=el.parentElement.getBoundingClientRect();
+      if(r.bottom>0 && r.top<innerHeight){
+        el.style.transform='translateY('+((r.top-innerHeight/2)*-0.05)+'px)';
+      }
+    });
+  }
+  addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+  // свет за курсором
+  var g=document.getElementById('glow');
+  if(!reduce){
+    addEventListener('mousemove',function(e){
+      g.style.opacity='1'; g.style.left=e.clientX+'px'; g.style.top=e.clientY+'px';
+    },{passive:true});
+  }
+
+  // появление
+  var els=[].slice.call(document.querySelectorAll('.rv'));
+  var io=new IntersectionObserver(function(en){
+    en.forEach(function(e){
+      if(e.isIntersecting){
+        var sibs=[].slice.call(e.target.parentElement.children).filter(function(n){return n.classList.contains('rv')});
+        var i=sibs.indexOf(e.target);
+        setTimeout(function(){e.target.classList.add('on')}, Math.max(0,i)*85);
+        io.unobserve(e.target);
+      }
+    });
+  },{threshold:.12});
+  els.forEach(function(el){
+    if(el.getBoundingClientRect().top < innerHeight*1.05){
+      el.style.transition='none'; el.classList.add('on');
+      setTimeout(function(){el.style.transition=''},60);
+    } else { io.observe(el); }
+  });
+
+  // наклон карточек
+  if(!reduce){
+    [].slice.call(document.querySelectorAll('.gcard,.step')).forEach(function(c){
+      c.style.transformStyle='preserve-3d';
+      c.addEventListener('mousemove',function(e){
+        var r=c.getBoundingClientRect();
+        var px=(e.clientX-r.left)/r.width-.5, py=(e.clientY-r.top)/r.height-.5;
+        c.style.transform='perspective(900px) rotateY('+(px*4.5)+'deg) rotateX('+(-py*4.5)+'deg)';
+      });
+      c.addEventListener('mouseleave',function(){c.style.transform=''});
+    });
+  }
+
+  // копирование
+  [].slice.call(document.querySelectorAll('.copy')).forEach(function(b){
+    b.addEventListener('click',function(){
+      var code=b.closest('.pwrap').querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(function(){
+        var t=b.textContent; b.textContent='✓ Скопировано!'; b.classList.add('ok');
+        setTimeout(function(){b.textContent=t;b.classList.remove('ok')},2000);
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
